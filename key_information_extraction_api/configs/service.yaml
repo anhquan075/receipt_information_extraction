@@ -1,0 +1,7 @@
+SERVICE:
+    SERVICE_IP: "0.0.0.0"
+    SERVICE_PORT: 5002
+    LOG_PATH: "logfile"
+    MODEL_PATH: "saved_models/model_best.pth"
+    OUTPUT_DIR: "output_dir"
+    KIE_VISUALIZE: True
