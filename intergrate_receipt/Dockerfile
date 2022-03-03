@@ -12,7 +12,7 @@ RUN apt-get install tesseract-ocr -y
 
 RUN pip3 install -U pip && pip3 install pillow more_itertools sklearn pandas unidecode tqdm \
     recognizers_text recognizers_date_time Levenshtein pytesseract shapely numpy opencv-python \
-    configparser==5.0.2 six==1.16.0 future==0.18.2 python-multipart uvicorn==0.14.0 fastapi==0.65.2 requests
+    configparser==5.0.2 six==1.16.0 future==0.18.2 python-multipart uvicorn==0.14.0 fastapi==0.65.2 requests pymongo
 
 COPY . /base/ 
 

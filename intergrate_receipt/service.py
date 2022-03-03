@@ -7,7 +7,7 @@ import pydantic
 # need install lib
 import uvicorn
 import cv2
-import traceback
+import json
 import asyncio
 import numpy as np
 # custom modules
@@ -18,6 +18,8 @@ from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.encoders import jsonable_encoder
 from typing import Optional, List
 from pydantic import BaseModel
+from pymongo import MongoClient
+
 from configparser import ConfigParser
 from PIL import Image
 # custom modules
@@ -32,6 +34,9 @@ config.read("config/service_intergrate.cfg")
 SERVICE_IP = str(config.get('main', 'SERVICE_IP'))
 SERVICE_PORT = int(config.get('main', 'SERVICE_PORT'))
 LOG_PATH = str(config.get('main', 'LOG_PATH'))
+
+DB = "receipt"
+MSG_COLLECTION = "fallback_msg"
 
 app = FastAPI()
 
@@ -76,6 +81,10 @@ async def predict(image: UploadFile = File(...)):
             return; 
         
         predicts = intergrate(img)
+        with MongoClient() as client:
+            msg_collection = client[DB][MSG_COLLECTION]
+            msg_collection.insert_one(json.dumps(predicts))
+            logger.info("Insert successfully into database!")
             
         return_result = {'code': '1000', 'status': rcode.code_1000, 'predicts': predicts,
                         'return': 'list of predicted forms'}

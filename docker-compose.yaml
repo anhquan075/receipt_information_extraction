@@ -90,9 +90,26 @@ services:
     networks:
       - service_net
 
+  db:
+      image: mongo
+      environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
+      ports:
+      - 27017:27017
+      restart: unless-stopped
+      depends_on:
+      - intergrate
+      networks:
+      - service_net
+      volumes:
+      - mongodata:/data/db
+      container_name: receipt_db_logging
 networks:
   service_net:
     driver: bridge
 
 volumes:
   intergrate_storage: 
+  mongodata:
