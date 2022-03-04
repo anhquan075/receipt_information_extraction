@@ -13,7 +13,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["1"]
+              device_ids: ["4"]
               capabilities: [gpu]
 
 
@@ -30,7 +30,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["1"]
+              device_ids: ["4"]
               capabilities: [gpu]
 
   paddlepaddle_detect_recepit:
@@ -46,7 +46,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["1"]
+              device_ids: ["4"]
               capabilities: [gpu]
 
   vietocr_receipt_tensor_trt:
@@ -62,7 +62,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["1"]
+              device_ids: ["4"]
               capabilities: [gpu]
   intergrate:
     build:

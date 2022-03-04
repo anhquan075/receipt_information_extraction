@@ -81,9 +81,10 @@ async def predict(image: UploadFile = File(...)):
             return; 
         
         predicts = intergrate(img)
+        print(predicts)
         with MongoClient() as client:
             msg_collection = client[DB][MSG_COLLECTION]
-            msg_collection.insert_one(json.dumps(predicts))
+            msg_collection.insert_one(dict(predicts).update({'image_id': image.filename}))
             logger.info("Insert successfully into database!")
             
         return_result = {'code': '1000', 'status': rcode.code_1000, 'predicts': predicts,

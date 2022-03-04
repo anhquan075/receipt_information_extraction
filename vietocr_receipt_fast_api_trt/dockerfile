@@ -17,8 +17,8 @@ RUN pip3 install TensorRT-7.2.2.3/python/tensorrt-7.2.2.3-cp36-none-linux_x86_64
 
 COPY . /base
 
-RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1Z48833l7sflFI2YBaM_kkzwvHmh6zQHP' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1Z48833l7sflFI2YBaM_kkzwvHmh6zQHP" -O model/transformer_decoder.trt && rm -rf /tmp/cookies.txt && \
-    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1LSLFEYBOKNE4O0siZiLvh3rASaFEsZQH' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1LSLFEYBOKNE4O0siZiLvh3rASaFEsZQH" -O model/transformer_encoder.trt && rm -rf /tmp/cookies.txt 
+RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1rhAA5IK9JVqghK6T5hNkUNz1tdc3SqrW' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1rhAA5IK9JVqghK6T5hNkUNz1tdc3SqrW" -O model/transformer_decoder.trt && rm -rf /tmp/cookies.txt && \
+    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1OnA0ir6jo7eOL6Ey5qQoA6wxjSHmpRo8' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1OnA0ir6jo7eOL6Ey5qQoA6wxjSHmpRo8" -O model/transformer_encoder.trt && rm -rf /tmp/cookies.txt 
 
 CMD nvidia-smi; sh start_service.sh
 
