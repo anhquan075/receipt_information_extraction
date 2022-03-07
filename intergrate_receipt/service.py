@@ -20,6 +20,8 @@ from typing import Optional, List
 from pydantic import BaseModel
 from pymongo import MongoClient
 
+from urllib.parse import quote_plus
+
 from configparser import ConfigParser
 from PIL import Image
 # custom modules
@@ -35,8 +37,6 @@ SERVICE_IP = str(config.get('main', 'SERVICE_IP'))
 SERVICE_PORT = int(config.get('main', 'SERVICE_PORT'))
 LOG_PATH = str(config.get('main', 'LOG_PATH'))
 
-DB = "receipt"
-MSG_COLLECTION = "fallback_msg"
 
 app = FastAPI()
 
@@ -59,6 +59,22 @@ class PredictData(BaseModel):
     images: Optional[List[str]] = pydantic.Field(default=None,
                     example=None, description='List of base64 encoded images')
 
+def get_client():
+    """
+    Setup a mongo client for the site
+    :return:
+    """
+    host = os.getenv('MONGODB_HOST', '')
+    username = os.getenv('MONGODB_USER', '')
+    password = os.getenv('MONGODB_PASSWORD', '')
+    port = int(os.getenv('MONGODB_PORT', 27017))
+    endpoint = 'mongodb://{0}:{1}@{2}'.format(quote_plus(username), quote_plus(password), host)
+    mongo_client = MongoClient(endpoint, port)
+    return mongo_client
+
+client = get_client()
+db = client.new_db
+posts = db.posts
 
 print("SERVICE_IP", SERVICE_IP)
 print("SERVICE_PORT", SERVICE_PORT)
@@ -80,12 +96,11 @@ async def predict(image: UploadFile = File(...)):
             return_result = {'code': '609', 'status': rcode.code_609}
             return; 
         
-        predicts = intergrate(img)
-        print(predicts)
-        with MongoClient() as client:
-            msg_collection = client[DB][MSG_COLLECTION]
-            msg_collection.insert_one(dict(predicts).update({'image_id': image.filename}))
-            logger.info("Insert successfully into database!")
+        predicts = dict(intergrate(img))
+        predicts.update({"image": image.filename})
+        
+        posts.insert_one(dict(predicts))
+        logger.info("Insert successfully into database!")
             
         return_result = {'code': '1000', 'status': rcode.code_1000, 'predicts': predicts,
                         'return': 'list of predicted forms'}

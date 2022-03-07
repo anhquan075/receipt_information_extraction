@@ -13,7 +13,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["4"]
+              device_ids: ["0"]
               capabilities: [gpu]
 
 
@@ -30,7 +30,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["4"]
+              device_ids: ["0"]
               capabilities: [gpu]
 
   paddlepaddle_detect_recepit:
@@ -46,7 +46,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["4"]
+              device_ids: ["0"]
               capabilities: [gpu]
 
   vietocr_receipt_tensor_trt:
@@ -62,7 +62,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["4"]
+              device_ids: ["0"]
               capabilities: [gpu]
   intergrate:
     build:
@@ -73,9 +73,17 @@ services:
     networks:
       - service_net
     restart: unless-stopped
+    environment:
+      - MONGODB_USER=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_PORT=${MONGODB_PORT}
     container_name: receipt_intergrate
-    volumes:
-      - intergrate_storage:/base/
+    depends_on:
+      - vietocr_receipt_tensor_trt
+      - faster_rcnn_detec_receipt
+      - paddlepaddle_detect_recepit
+      - key_information_extraction_receipt
 
   nginx:
     image: nginx:latest        
@@ -111,5 +119,4 @@ networks:
     driver: bridge
 
 volumes:
-  intergrate_storage: 
   mongodata:

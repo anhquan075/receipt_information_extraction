@@ -10,3 +10,7 @@ opencv-python
 easydict
 matplotlib
 Levenshtein
+onnx  
+onnxruntime-gpu
+numpy 
+protobuf==3.16.0

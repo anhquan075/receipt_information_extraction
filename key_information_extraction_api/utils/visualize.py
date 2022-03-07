@@ -22,6 +22,7 @@ def viz_poly(img, list_poly, save_viz_path=None, ignor_type=[1]):
     '''
     fig, ax = plt.subplots(1)
     fig.set_size_inches(20, 20)
+    plt.axis('off')
     plt.imshow(img)
 
     for polygon in list_poly:

@@ -13,7 +13,7 @@ import csv
 from time import gmtime, strftime
 from collections import defaultdict
 
-from flask import Flask, render_template, Response, request, jsonify
+from flask import Flask, render_template, Response, request, jsonify, send_file
 
 from utils.parser import get_config
 # from utils.utils import load_class_names, get_image
@@ -144,8 +144,8 @@ def extract_data(bboxes_transcripts, image_folder_path, output_path):
                                training=False,
                                max_boxes_num=130,
                                max_transcript_len=70)
-    test_data_loader = DataLoader(test_dataset, batch_size=8, shuffle=False,
-                                  num_workers=2, collate_fn=BatchCollateFn(training=False))
+    test_data_loader = DataLoader(test_dataset, batch_size=32, shuffle=False,
+                                  num_workers=1, collate_fn=BatchCollateFn(training=False))
 
     # setup output path
     output_path = Path(output_path)
@@ -155,8 +155,6 @@ def extract_data(bboxes_transcripts, image_folder_path, output_path):
     now_start = time.time()
     with torch.no_grad():
         for step_idx, input_data_item in enumerate(test_data_loader):
-            # if step_idx!=355:
-            #     continue
             now = time.time()
             for key, input_value in input_data_item.items():
                 if input_value is not None:
@@ -164,11 +162,12 @@ def extract_data(bboxes_transcripts, image_folder_path, output_path):
             output = pick_model(**input_data_item)
             logits = output['logits']
             new_mask = output['new_mask']
+            print(output.keys(), input_data_item.keys())
             image_indexs = input_data_item['image_indexs']  # (B,)
             text_segments = input_data_item['text_segments']  # (B, num_boxes, T)
             mask = input_data_item['mask']
             text_length = input_data_item['text_length']
-            boxes_coors = input_data_item['boxes_coordinate'].cpu().numpy()[0]
+            # boxes_coors = input_data_item['boxes_coordinate'].cpu().numpy()[0]
             # List[(List[int], torch.Tensor)]
             best_paths = pick_model.decoder.crf_layer.viterbi_tags(logits, mask=new_mask, logits_batch_first=True)
             predicted_tags = []
@@ -182,7 +181,7 @@ def extract_data(bboxes_transcripts, image_folder_path, output_path):
             for decoded_tags, decoded_texts, image_index in zip(decoded_tags_list, decoded_texts_list, image_indexs):
                 # List[ Tuple[str, Tuple[int, int]] ]
                 # spans = bio_tags_to_spans(decoded_tags, [])
-                spans, line_pos_from_bottom = bio_tags_to_spans2(decoded_tags, text_length.cpu().numpy())
+                spans, _ = bio_tags_to_spans2(decoded_tags, text_length.cpu().numpy())
                 # spans = sorted(spans, key=lambda x: x[1][0])
 
                 entities = []  # exists one to many case
@@ -191,28 +190,21 @@ def extract_data(bboxes_transcripts, image_folder_path, output_path):
                                   text=''.join(decoded_texts[range_tuple[0]:range_tuple[1] + 1]))
                     entities.append(entity)
 
-                result_file_dir = output_path.joinpath(Path(test_dataset.files_list[image_index]).stem)
-                result_file_dir.mkdir(exist_ok=True)
-                result_file = result_file_dir.joinpath(Path(test_dataset.files_list[image_index]).stem + '.txt')
-                base_filename = os.path.basename(result_file)
-                list_coors = get_list_coors_from_line_pos_from_bottom(image_folder_path, base_filename.replace('.txt', '.jpg'),
-                                                                      boxes_coors, line_pos_from_bottom)
+                # result_file_dir = output_path.joinpath(Path(test_dataset.files_list[image_index]).stem)
+                # result_file_dir.mkdir(exist_ok=True)
+                # result_file = result_file_dir.joinpath(Path(test_dataset.files_list[image_index]).stem + '.txt')
+                # base_filename = os.path.basename(result_file)
 
                 entities_lst = []
-                with result_file.open(mode='w', encoding='utf8') as f:
-                    for jdx, item in enumerate(entities):
-                        f.write('{}\t{}\t{}\n'.format(list_coors[jdx], item['entity_name'], item['text']))
-                        entities_lst.append((item['entity_name'], item['text']))
+                for item in entities:
+                    entities_lst.append([item['entity_name'], item['text']])
 
                 default_entities_dict = defaultdict(list)
                 for ent, text in entities_lst:
                     default_entities_dict[ent].append(text)
 
     logger.info('time run program:'.format(time.time() - now_start))
-    if KIE_VISUALIZE:
-        viz_output_of_pick(img_dir=image_folder_path,
-                           output_txt_dir=result_file_dir,
-                           output_viz_dir=result_file_dir)
+
     print(default_entities_dict)
     return default_entities_dict
 
