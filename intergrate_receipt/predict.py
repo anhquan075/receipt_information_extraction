@@ -148,10 +148,12 @@ def intergrate(image):
             
             # Find angle to rotate         
             rot_data = pytesseract.image_to_osd(crop)
-            angle = int(re.search('(?<=Rotate: )\d+', rot_data).group(0))
+            orentation_angle = int(re.search('(?<=Orientation in degrees: )\d+', rot_data).group(0))
+            if orentation_angle < 180:
+                orentation_angle = int(re.search('(?<=Rotate: )\d+', rot_data).group(0))
             
             crop = Image.fromarray(crop)
-            crop.rotate(angle, expand=True).save(img_out_path)
+            crop.rotate(orentation_angle, expand=True).save(img_out_path)
         else:
             cv2.imwrite(img_out_path, img)
         image_path = img_out_path
