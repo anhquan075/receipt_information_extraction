@@ -7,7 +7,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-    container_name: receipt_detect
+    container_name: mlcv_gnome_receipt_detect
     deploy:
       resources:
         reservations:
@@ -24,7 +24,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-    container_name: receipt_kie
+    container_name: mlcv_gnome_receipt_kie
     deploy:
       resources:
         reservations:
@@ -40,7 +40,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-    container_name: receipt_detect_text
+    container_name: mlcv_gnome_receipt_detect_text
     deploy:
       resources:
         reservations:
@@ -56,7 +56,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-    container_name: receipt_recognize_text
+    container_name: mlcv_gnome_receipt_recognize_text
     deploy:
       resources:
         reservations:
@@ -78,7 +78,7 @@ services:
       - MONGODB_PASSWORD=${MONGODB_PASSWORD}
       - MONGODB_HOST=${MONGODB_HOST}
       - MONGODB_PORT=${MONGODB_PORT}
-    container_name: receipt_intergrate
+    container_name: mlcv_gnome_receipt_intergrate
     depends_on:
       - vietocr_receipt_tensor_trt
       - faster_rcnn_detec_receipt
@@ -92,7 +92,7 @@ services:
     ports:
         - "5003:80"
     restart: unless-stopped
-    container_name: receipt_nginx
+    container_name: mlcv_gnome_receipt_nginx
     depends_on:
         - intergrate
     networks:
@@ -113,7 +113,7 @@ services:
       - service_net
       volumes:
       - mongodata:/data/db
-      container_name: receipt_db_logging
+      container_name: mlcv_gnome_receipt_db_logging
 networks:
   service_net:
     driver: bridge
