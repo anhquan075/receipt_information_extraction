@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 FROM nvcr.io/nvidia/tensorrt:21.03-py3
 
 ENV DEBIAN_FRONTEND noninteractive
+=======
+FROM nvidia/cuda:11.1-cudnn8-devel-ubuntu18.04
+>>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
 
 WORKDIR /base
 
@@ -9,6 +13,7 @@ RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machi
 
 RUN apt-get update && apt-get install -y python3 python3-pip cmake wget llvm && \
     apt-get install -y libglib2.0-0 libsm6 libxext6 libxrender-dev && \ 
+<<<<<<< HEAD
     apt-get install -y protobuf-compiler libprotobuf-dev
 
 RUN python3 -m pip install --upgrade pip
@@ -23,11 +28,24 @@ RUN git clone --recursive --branch v2020.1 https://github.com/inducer/pycuda.git
 	cd pycuda && \
 	python3 configure.py --cuda-root=/usr/local/cuda && \
 	pip3 install -e . 
+=======
+    apt-get install -y protobuf-compiler=3.0.0-9.1ubuntu1 libprotobuf-dev=3.0.0-9.1ubuntu1
+
+RUN pip3 install --upgrade pip
+
+RUN pip3 install numpy==1.18.0 opencv-python==4.2.0.32 configparser==5.0.2 six==1.16.0 future==0.18.2 \
+    python-multipart uvicorn==0.14.0 fastapi==0.65.2 \
+    requests torch==1.7.0 torchvision==0.8.0 pycuda==2021.1 onnx-simplifier==0.3.0 onnx==1.9.0
+
+RUN wget  -O tensortt.tar.gz https://aiclub.uit.edu.vn/storage/tensortt-7.2.2.3.tar.gz && tar -xf tensortt.tar.gz
+RUN pip3 install TensorRT-7.2.2.3/python/tensorrt-7.2.2.3-cp36-none-linux_x86_64.whl einops pyyaml gdown more-itertools
+>>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
 
 COPY . /base
 
 RUN mkdir model logfile
 
+<<<<<<< HEAD
 RUN pip3 install gdown
 
 RUN gdown 19BdhVbJh4IZmWWPSGfnn5cylNNdQgmYT -O model/transformer_decoder.trt && \
@@ -35,6 +53,10 @@ RUN gdown 19BdhVbJh4IZmWWPSGfnn5cylNNdQgmYT -O model/transformer_decoder.trt && 
 
 # RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1wFePMC2Y9WwrIxNfAkfSbMYfUWQl_g1a' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1wFePMC2Y9WwrIxNfAkfSbMYfUWQl_g1a" -O model/transformer_decoder.trt && rm -rf /tmp/cookies.txt && \
 #    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1cyXR5KKxtrXjZtXlRudeDYSr_64YCKPi' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1cyXR5KKxtrXjZtXlRudeDYSr_64YCKPi" -O model/transformer_encoder.trt && rm -rf /tmp/cookies.txt 
+=======
+RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1rhAA5IK9JVqghK6T5hNkUNz1tdc3SqrW' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1rhAA5IK9JVqghK6T5hNkUNz1tdc3SqrW" -O model/transformer_decoder.trt && rm -rf /tmp/cookies.txt && \
+    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1OnA0ir6jo7eOL6Ey5qQoA6wxjSHmpRo8' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1OnA0ir6jo7eOL6Ey5qQoA6wxjSHmpRo8" -O model/transformer_encoder.trt && rm -rf /tmp/cookies.txt 
+>>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
 
 CMD nvidia-smi; sh start_service.sh
 
