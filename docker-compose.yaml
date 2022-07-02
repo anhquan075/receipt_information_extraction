@@ -7,11 +7,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-<<<<<<< HEAD
     container_name: receipt_detect
-=======
-    container_name: mlcv_gnome_receipt_detect
->>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
     deploy:
       resources:
         reservations:
@@ -28,11 +24,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-<<<<<<< HEAD
     container_name: receipt_kie
-=======
-    container_name: mlcv_gnome_receipt_kie
->>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
     deploy:
       resources:
         reservations:
@@ -48,11 +40,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-<<<<<<< HEAD
     container_name: receipt_detect_text
-=======
-    container_name: mlcv_gnome_receipt_detect_text
->>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
     deploy:
       resources:
         reservations:
@@ -68,11 +56,7 @@ services:
     networks:
       - service_net
     restart: unless-stopped
-<<<<<<< HEAD
     container_name: receipt_recognize_text
-=======
-    container_name: mlcv_gnome_receipt_recognize_text
->>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
     deploy:
       resources:
         reservations:
@@ -94,11 +78,7 @@ services:
       - MONGODB_PASSWORD=${MONGODB_PASSWORD}
       - MONGODB_HOST=${MONGODB_HOST}
       - MONGODB_PORT=${MONGODB_PORT}
-<<<<<<< HEAD
     container_name: receipt_intergrate
-=======
-    container_name: mlcv_gnome_receipt_intergrate
->>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
     depends_on:
       - vietocr_receipt_tensor_trt
       - faster_rcnn_detec_receipt
@@ -112,11 +92,7 @@ services:
     ports:
         - "5003:80"
     restart: unless-stopped
-<<<<<<< HEAD
     container_name: receipt_nginx
-=======
-    container_name: mlcv_gnome_receipt_nginx
->>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
     depends_on:
         - intergrate
     networks:
@@ -137,11 +113,7 @@ services:
       - service_net
       volumes:
       - mongodata:/data/db
-<<<<<<< HEAD
       container_name: receipt_db_logging
-=======
-      container_name: mlcv_gnome_receipt_db_logging
->>>>>>> 6f3e844207b36c12b16b93767b215920fbbc5142
 networks:
   service_net:
     driver: bridge
