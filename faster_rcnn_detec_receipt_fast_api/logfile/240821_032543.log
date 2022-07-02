@@ -1,0 +1,17 @@
+2021-08-24 03:25:46.061 INFO checkpoint - load: [Checkpointer] Loading from /base/model/faster_RCNN_R_101_FPN_35AP_reciept_90AP.pth ...
+2021-08-24 03:25:46.490 INFO server - serve: Started server process [49]
+2021-08-24 03:25:46.491 INFO on - startup: Waiting for application startup.
+2021-08-24 03:25:46.492 INFO on - startup: Application startup complete.
+2021-08-24 03:25:46.493 INFO server - _log_started_message: Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
+2021-08-24 03:31:28.585 INFO service - predict: predict
+2021-08-24 03:31:28.922 ERROR service - predict: predict() takes 1 positional argument but 3 were given
+Traceback (most recent call last):
+  File "./service.py", line 172, in predict
+    predicts = load_predict(process_image)
+  File "./service.py", line 100, in load_predict
+    image, PREDICTOR, CLASSES)
+TypeError: predict() takes 1 positional argument but 3 were given
+2021-08-24 03:33:48.656 INFO server - shutdown: Shutting down
+2021-08-24 03:33:48.756 INFO on - shutdown: Waiting for application shutdown.
+2021-08-24 03:33:48.757 INFO on - shutdown: Application shutdown complete.
+2021-08-24 03:33:48.757 INFO server - serve: Finished server process [49]

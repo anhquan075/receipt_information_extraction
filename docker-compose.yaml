@@ -1,0 +1,122 @@
+version: "2"
+services:
+  faster_rcnn_detec_receipt:
+    build:
+      context: ./faster_rcnn_detec_receipt_fast_api
+      dockerfile: ./dockerfile
+    networks:
+      - service_net
+    restart: unless-stopped
+    container_name: receipt_detect
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+
+  key_information_extraction_receipt:
+    build:
+      context: ./key_information_extraction_api
+      dockerfile: ./Dockerfile
+    networks:
+      - service_net
+    restart: unless-stopped
+    container_name: receipt_kie
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+  paddlepaddle_detect_recepit:
+    build:
+      context: ./receipt_paddle_ocr
+      dockerfile: ./Dockerfile
+    networks:
+      - service_net
+    restart: unless-stopped
+    container_name: receipt_detect_text
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+  vietocr_receipt_tensor_trt:
+    build:
+      context: ./vietocr_receipt_fast_api_trt
+      dockerfile: ./dockerfile
+    networks:
+      - service_net
+    restart: unless-stopped
+    container_name: receipt_recognize_text
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+  intergrate:
+    build:
+      context: intergrate_receipt
+      dockerfile: ./Dockerfile
+    ports:
+      - "5004:5004"
+    networks:
+      - service_net
+    restart: unless-stopped
+    environment:
+      - MONGODB_USER=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_PORT=${MONGODB_PORT}
+    container_name: receipt_intergrate
+    depends_on:
+      - vietocr_receipt_tensor_trt
+      - faster_rcnn_detec_receipt
+      - paddlepaddle_detect_recepit
+      - key_information_extraction_receipt
+
+  nginx:
+    image: nginx:latest        
+    volumes:
+        - ./config/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+        - "5003:80"
+    restart: unless-stopped
+    container_name: receipt_nginx
+    depends_on:
+        - intergrate
+    networks:
+      - service_net
+
+  db:
+      image: mongo
+      environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
+      ports:
+      - 27017:27017
+      restart: unless-stopped
+      depends_on:
+      - intergrate
+      networks:
+      - service_net
+      volumes:
+      - mongodata:/data/db
+      container_name: receipt_db_logging
+networks:
+  service_net:
+    driver: bridge
+
+volumes:
+  mongodata:

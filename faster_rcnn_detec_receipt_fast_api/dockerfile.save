@@ -1,0 +1,21 @@
+FROM pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
+
+RUN apt-get update && apt-get install -y cmake wget llvm && \
+    apt-get install -y libglib2.0-0 libsm6 libxext6 libxrender-dev && \
+    apt install -y libgl1 libglib2.0-0 libxrender1 libsm6
+
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
+
+RUN pip install configparser==5.0.2 six==1.16.0 future==0.18.2 python-multipart uvicorn==0.14.0 fastapi==0.65.2 requests \
+    opencv-python==4.4.0.44 numpy==1.18.5 easydict==1.9.0 pydantic aiofiles==0.5.0 gdown pyyaml==5.3.1
+
+COPY . /base
+
+WORKDIR /base
+
+RUN pip install -e detectron2
+
+RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1aIrg7b54S9K-5D2Iu8IOwY1grlmYyudE' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1aIrg7b54S9K-5D2Iu8IOwY1grlmYyudE" -O model/model_final.pth && rm -rf /tmp/cookies.txt
+
+CMD nvidia-smi; sh start_service.sh
